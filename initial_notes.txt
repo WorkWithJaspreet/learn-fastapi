@@ -1,0 +1,27 @@
+What is CRUD?
+----------------------------------------------------------------------------------------------------------------------------
+|  A CRUD operation allows to Create, Read, Update, or Delete data in a database or data store.
+|  In FastAPI, CRUD operations are typically implemented using Pydantic models for data validation, SQLAlchemy for ORM/database interaction, and FastAPI endpoints for API routes.
+|
+|  1. **Create**: Use a POST endpoint to accept data, validate it with a Pydantic schema, and insert it into the database using SQLAlchemy.
+|  2. **Read**: Use GET endpoints to fetch data. You can retrieve all records or a specific record by ID.
+|  3. **Update**: Use a PUT or PATCH endpoint to modify existing data. The endpoint receives the updated data, validates it, and updates the record in the database.
+|  4. **Delete**: Use a DELETE endpoint to remove data from the database by ID.
+|  
+|  **Key components:**
+|  - **Pydantic models**: Define request and response schemas.
+|  - **SQLAlchemy models**: Define database tables and relationships.
+|  - **Database session**: Manage transactions and queries.
+|  - **Dependency injection**: Use FastAPI's `Depends` to inject the database session into endpoints.
+|  
+|  By combining these tools, you can build robust, type-safe, and efficient CRUD APIs in FastAPI.
+|  
+|  *-----------------------------------------------------------------------------*
+|  |  **Note**:                                                                  |
+|  |    Always use plural to define routes as it is a standard convention.       |
+|  |    For instance, use /posts and not /post; use /products and not /product.  |
+|  *-----------------------------------------------------------------------------*
+|  
+----------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------
+

@@ -15,3 +15,11 @@ dist/
 
 # macOS system files
 .DS_Store
+
+# Database files
+*.sqlite3
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
