@@ -1,13 +1,13 @@
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 # from fastapi.params import Body
-from pydantic import BaseModel
 # from typing import Optional
+from typing import List
 # from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 from sqlalchemy.orm import Session
-from . import models
+from . import models, schemas
 from .database import engine, get_db
 
 
@@ -15,14 +15,6 @@ models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
-
-
-# Created a model for the post using BaseModel from Pydantic
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-    # rating: Optional[int] = None  # Optional field
 
 
 while True:
@@ -69,7 +61,8 @@ def root():  # Path operation function
 
 # FastAPI goes line by line and runs the first path operation along with the http method that matches the request
 # So the order of the path operations matter
-@app.get("/posts")
+# @app.get("/posts")
+@app.get("/posts", response_model=List[schemas.Post])
 # def get_posts():
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts""")
@@ -77,10 +70,12 @@ def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
 
     # print(posts)
-    return {"data": posts}
+    # return {"data": posts}
+    return posts
 
 
-@app.get("/posts/{id}")
+# @app.get("/posts/{id}")
+@app.get("/posts/{id}", response_model=schemas.Post)
 # def get_post(id: int, response: Response):
 # def get_post(id: int):
 def get_post(id: int, db: Session = Depends(get_db)):
@@ -95,14 +90,16 @@ def get_post(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Post with {id} was not found")
     # print(post)
-    return {"data": post}
+    # return {"data": post}
+    return post
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 # Take everything from the request body, convert it to the dictionary and put it in payload
 # def create_posts(payload: dict = Body(...)):
-# def create_posts(post: Post):  # Referencing the Post model
-def create_posts(post: Post, db: Session = Depends(get_db)):
+# def create_posts(post: schemas.PostBase):  # Referencing the Post model
+# def create_posts(post: schemas.PostBase, db: Session = Depends(get_db)):
+def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # We expect the payload to have title: str and content: str
     # print(post)  # print(payload)
     # post_dict = post.dict()
@@ -119,7 +116,8 @@ def create_posts(post: Post, db: Session = Depends(get_db)):
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {"data": new_post}
+    # return {"data": new_post}
+    return new_post
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -143,9 +141,11 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.put("/posts/{id}")
-# def update_post(id: int, post: Post):
-def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+# @app.put("/posts/{id}")
+@app.put("/posts/{id}", response_model=schemas.Post)
+# def update_post(id: int, post: schemas.PostBase):
+# def update_post(id: int, post: schemas.PostBase, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     # index = find_index_post(id)
     # if index == None:
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -163,4 +163,5 @@ def update_post(id: int, post: Post, db: Session = Depends(get_db)):
     updated_post.update(post.dict(), synchronize_session=False)
     db.commit()
     # conn.commit()
-    return {"data": updated_post.first()}
+    # return {"data": updated_post.first()}
+    return updated_post.first()
