@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 
@@ -36,3 +36,14 @@ class Post(PostBase):
     # model_config = {  # This is used in Pydantic v2 to read data from ORM models/objects and it converts it to a dictionary automatically
     #     "from_attributes": True  # This is equivalent to orm_mode = True in Pydantic v1
     # }  # Though this is not needed as we are using response_model in the route decorator which automatically does this conversion for us, but it's good to know about it as it's gives clarity about how Pydantic works with ORM models/objects
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
