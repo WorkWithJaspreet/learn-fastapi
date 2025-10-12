@@ -1,12 +1,12 @@
 from fastapi import Response, status, HTTPException, Depends, APIRouter  # , FastAPI
 from sqlalchemy.orm import Session
 from typing import List
-from .. import models, schemas
-from ..database import get_db
+from .. import database, schemas, models
 
 
 router = APIRouter(
-    prefix="/posts"
+    prefix="/posts",
+    tags=['Posts']  # Grouping the endpoints in the docs
 )
 
 
@@ -15,11 +15,10 @@ router = APIRouter(
 # @router.get("")
 @router.get("", response_model=List[schemas.Post])
 # def get_posts():
-def get_posts(db: Session = Depends(get_db)):
+def get_posts(db: Session = Depends(database.get_db)):
     # cursor.execute("""SELECT * FROM posts""")
     # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
-
     # print(posts)
     # return {"data": posts}
     return posts
@@ -29,7 +28,7 @@ def get_posts(db: Session = Depends(get_db)):
 @router.get("/{id}", response_model=schemas.Post)
 # def get_post(id: int, response: Response):
 # def get_post(id: int):
-def get_post(id: int, db: Session = Depends(get_db)):
+def get_post(id: int, db: Session = Depends(database.get_db)):
     # post = find_post(id)
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (id,))
     # post = cursor.fetchone()
@@ -49,8 +48,8 @@ def get_post(id: int, db: Session = Depends(get_db)):
 # Take everything from the request body, convert it to the dictionary and put it in payload
 # def create_post(payload: dict = Body(...)):
 # def create_post(post: schemas.PostBase):  # Referencing the Post model
-# def create_post(post: schemas.PostBase, db: Session = Depends(get_db)):
-def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
+# def create_post(post: schemas.PostBase, db: Session = Depends(database.get_db)):
+def create_post(post: schemas.PostCreate, db: Session = Depends(database.get_db)):
     # We expect the payload to have title: str and content: str
     # print(post)  # print(payload)
     # post_dict = post.dict()
@@ -73,7 +72,7 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 # def delete_post(id: int):
-def delete_post(id: int, db: Session = Depends(get_db)):
+def delete_post(id: int, db: Session = Depends(database.get_db)):
     # index = find_index_post(id)
     # if index == None:
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -95,8 +94,8 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 # @router.put("/{id}")
 @router.put("/{id}", response_model=schemas.Post)
 # def update_post(id: int, post: schemas.PostBase):
-# def update_post(id: int, post: schemas.PostBase, db: Session = Depends(get_db)):
-def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
+# def update_post(id: int, post: schemas.PostBase, db: Session = Depends(database.get_db)):
+def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(database.get_db)):
     # index = find_index_post(id)
     # if index == None:
     #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
